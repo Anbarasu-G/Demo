@@ -18,17 +18,17 @@ import lombok.extern.slf4j.Slf4j;
 @Component
 @Slf4j
 public class SuperAdminRegistrationEvent {
-	
+
 	@Value("${super_admin.email}")
 	private String email;
-	
+
 	private UserRepository userRepository;
 
 	public SuperAdminRegistrationEvent(UserRepository userRepository) {
 		this.userRepository = userRepository;
 	}
-	
-	
+
+
 	@EventListener({ApplicationReadyEvent.class})
 	public void registerSuperAdmin() {
 		log.info("checking if the super admin is present");
@@ -40,11 +40,11 @@ public class SuperAdminRegistrationEvent {
 			user.setPassword(UUID.randomUUID().toString());
 			user.setRole(UserRole.SUPER_ADMIN);
 			user.setUsername("admin");
-			userRepository.save(user);	
+			userRepository.save(user);
 		}
 		else {
 			log.info("super admin present with email: "+list.get(0).getEmail());
 		}
-		
+
 	}
 }
