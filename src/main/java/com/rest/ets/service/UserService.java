@@ -1,15 +1,14 @@
 package com.rest.ets.service;
 
-import java.time.LocalDate;
 import java.util.Date;
 import java.util.List;
 import java.util.Random;
 
 
-import com.rest.ets.config.RandomGenerator;
 import com.rest.ets.util.MailSender;
 import com.rest.ets.util.MessageModel;
 import jakarta.mail.MessagingException;
+import org.springframework.cache.annotation.CachePut;
 import org.springframework.stereotype.Service;
 
 import com.rest.ets.entity.Admin;
@@ -45,7 +44,8 @@ public class UserService {
 	private MailSender mailSender;
 	private Random random;
 
-	public UserResponse saveUser(RegistrationRequest registrationRequest,UserRole role) {
+	@CachePut(cacheNames = "nonverifiedUser", key = "#registrationRequest.email")
+	public UserResponse registerUser(RegistrationRequest registrationRequest, UserRole role) {
 		User user = null;
 		switch (role) {
 		case ADMIN -> user = new Admin();
@@ -58,7 +58,6 @@ public class UserService {
 		if(user != null) {
 			user = mapper.mapToUserEntity(registrationRequest, user);
 			user.setRole(role);
-//			user = userRepository.save(user);
 			int otp = random.nextInt(100000, 999999);
 		}
 

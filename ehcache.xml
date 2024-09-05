@@ -15,12 +15,11 @@
         </resources>
     </cache>
 
-    <cache>
-
+    <cache alias="nonverifiedusers">
         <key-type>java.lang.String</key-type>
         <value-type>com.rest.ets.responsedto.UserResponse</value-type>
         <expiry>
-            <ttl> unit = minutes</ttl>
+            <ttl  unit = "minutes">2</ttl>
         </expiry>
         <resources>
             <heap unit="entries" >1000</heap>

@@ -44,7 +44,7 @@ public class UserController {
 			@ApiResponse(responseCode = "500",description = "internal server error",content = {@Content(schema = @Schema(anyOf = RuntimeException.class))})})
 	@PostMapping("/admins/register")
 	public ResponseEntity<ResponseStructure<UserResponse>> saveAdmin(@RequestBody @Valid RegistrationRequest registrationRequest) {
-		UserResponse adminResponse=userService.saveUser(registrationRequest,UserRole.ADMIN);
+		UserResponse adminResponse=userService.registerUser(registrationRequest,UserRole.ADMIN);
 		return responseBuilder.success(HttpStatus.CREATED,"Admin created Successfully", adminResponse);
 	}
 	
@@ -53,7 +53,7 @@ public class UserController {
 			@ApiResponse(responseCode = "500",description = "internal server error",content = {@Content(schema = @Schema(anyOf = RuntimeException.class))})})
 	@PostMapping("/hrs/register")
 	public ResponseEntity<ResponseStructure<UserResponse>>saveHr(@RequestBody @Valid RegistrationRequest registrationRequest){
-		UserResponse hrResponse=userService.saveUser(registrationRequest,UserRole.HR);
+		UserResponse hrResponse=userService.registerUser(registrationRequest,UserRole.HR);
 		return responseBuilder.success(HttpStatus.CREATED, "Hr created Successfully", hrResponse);
 	}
 	
@@ -62,7 +62,7 @@ public class UserController {
 			@ApiResponse(responseCode = "500",description = "internal server error",content = {@Content(schema = @Schema(anyOf = RuntimeException.class))})})
 	@PostMapping("/trainers/register")
 	public ResponseEntity<ResponseStructure<UserResponse>> saveTrainer(@RequestBody @Valid RegistrationRequest registrationRequest){
-		UserResponse response=userService.saveUser(registrationRequest,UserRole.TRAINER);
+		UserResponse response=userService.registerUser(registrationRequest,UserRole.TRAINER);
 		return responseBuilder.success(HttpStatus.CREATED, "Trainer created successfully", response);
 	}
 	
@@ -80,7 +80,7 @@ public class UserController {
 			@ApiResponse(responseCode = "500",description = "internal server error",content = {@Content(schema = @Schema(anyOf = RuntimeException.class))})})
 	@PostMapping("/students/register")
 	public ResponseEntity<ResponseStructure<UserResponse>> saveStudent(@RequestBody @Valid RegistrationRequest registrationRequest){
-		UserResponse response=userService.saveUser(registrationRequest,UserRole.STUDENT);
+		UserResponse response=userService.registerUser(registrationRequest,UserRole.STUDENT);
 		return responseBuilder.success(HttpStatus.CREATED, "Student created successfully", response);
 	}
 	
