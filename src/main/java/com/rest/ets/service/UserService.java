@@ -58,7 +58,8 @@ public class UserService {
 		if(user != null) {
 			user = mapper.mapToUserEntity(registrationRequest, user);
 			user.setRole(role);
-			user = userRepository.save(user);
+//			user = userRepository.save(user);
+			int otp = random.nextInt(100000, 999999);
 		}
 
 		return mapper.mapToUserResponse(user);
