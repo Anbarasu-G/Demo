@@ -3,8 +3,10 @@ package com.rest.ets.service;
 import java.time.LocalDate;
 import java.util.Date;
 import java.util.List;
+import java.util.Random;
 
 
+import com.rest.ets.config.RandomGenerator;
 import com.rest.ets.util.MailSender;
 import com.rest.ets.util.MessageModel;
 import jakarta.mail.MessagingException;
@@ -41,6 +43,7 @@ public class UserService {
 	private RatingRepository ratingRepository;
 	private RatingMapper ratingMapper;
 	private MailSender mailSender;
+	private Random random;
 
 	public UserResponse saveUser(RegistrationRequest registrationRequest,UserRole role) {
 		User user = null;
