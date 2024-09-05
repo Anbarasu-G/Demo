@@ -1,8 +1,13 @@
 package com.rest.ets.service;
 
+import java.time.LocalDate;
+import java.util.Date;
 import java.util.List;
 
 
+import com.rest.ets.util.MailSender;
+import com.rest.ets.util.MessageModel;
+import jakarta.mail.MessagingException;
 import org.springframework.stereotype.Service;
 
 import com.rest.ets.entity.Admin;
@@ -35,6 +40,7 @@ public class UserService {
 	private UserMapper mapper;
 	private RatingRepository ratingRepository;
 	private RatingMapper ratingMapper;
+	private MailSender mailSender;
 
 	public UserResponse saveUser(RegistrationRequest registrationRequest,UserRole role) {
 		User user = null;
@@ -94,9 +100,35 @@ public class UserService {
 					.map(rating->ratingMapper.mapToRatingResponseEntity(rating))
 					.toList();
 		}).orElseThrow(()->new UserNotFoundByIdException("student is not found by the given id"));
-
-
 	}
 
+	private  void sendVerificationOtpToUsers(String email, int otp)
+			throws MessagingException {
+       String text ="<!DOCTYPE html>\n" +
+			   "<html lang=\"en\">\n" +
+			   "\n" +
+			   "<head>\n" +
+			   "    <meta charset=\"UTF-8\">\n" +
+			   "    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n" +
+			   "    <title>Document</title>\n" +
+			   "</head>\n" +
+			   "<body>\n" +
+			   "    <p style=\"color: black;background-color: \n" +
+			   "    white; border: 1px solid outset;\">\n" +
+			   "    Hi, EDU Tracking System welcomes you \uD83D\uDE0A,\n" +
+			   "    Please Enter the OTP to verify your Email </p>\n" +
+			   "    <h4>"+ otp +"</h4>\n" +
+			   "\n" +
+			   "</body>\n" +
+			   "\n" +
+			   "</html>";
+	   MessageModel messageModel = new MessageModel();
 
+	   messageModel.setTo(email);
+	   messageModel.setSendDate(new Date());
+	   messageModel.setText(text);
+	   messageModel.setSubject("Email Verfication");
+	   mailSender.sendemail(messageModel);
+
+	}
 }
