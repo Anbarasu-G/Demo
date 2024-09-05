@@ -3,7 +3,9 @@ package com.rest.ets.util;
 import com.rest.ets.entity.User;
 import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.stereotype.Component;
 
+@Component
 public class CacheHelper {
 
     @CachePut(cacheNames = "nonverifiedUsers", key = "#user.email")

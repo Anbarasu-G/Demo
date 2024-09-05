@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Random;
 
 
+import com.rest.ets.util.CacheHelper;
 import com.rest.ets.util.MailSender;
 import com.rest.ets.util.MessageModel;
 import jakarta.mail.MessagingException;
@@ -43,8 +44,8 @@ public class UserService {
 	private RatingMapper ratingMapper;
 	private MailSender mailSender;
 	private Random random;
+	private CacheHelper cacheHelper;
 
-	@CachePut(cacheNames = "nonverifiedUser", key = "#registrationRequest.email")
 	public UserResponse registerUser(RegistrationRequest registrationRequest, UserRole role) {
 		User user = null;
 		switch (role) {
@@ -59,6 +60,9 @@ public class UserService {
 			user = mapper.mapToUserEntity(registrationRequest, user);
 			user.setRole(role);
 			int otp = random.nextInt(100000, 999999);
+
+			cacheHelper.userCache(user);
+			cacheHelper.otpCache(otp);
 		}
 
 		return mapper.mapToUserResponse(user);
