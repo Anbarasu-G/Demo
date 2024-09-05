@@ -16,8 +16,9 @@
     </cache>
 
     <cache>
+
         <key-type>java.lang.String</key-type>
-        <value-type>com.rest.ets.entity.User</value-type>
+        <value-type>com.rest.ets.responsedto.UserResponse</value-type>
         <expiry>
             <ttl> unit = minutes</ttl>
         </expiry>
@@ -25,6 +26,5 @@
             <heap unit="entries" >1000</heap>
             <offheap unit="MB">20</offheap>
         </resources>
-
     </cache>
 </config>
