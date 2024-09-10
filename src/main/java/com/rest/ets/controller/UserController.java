@@ -2,6 +2,7 @@ package com.rest.ets.controller;
 
 import java.util.List;
 
+import com.rest.ets.requestdto.OtpRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -44,17 +45,19 @@ public class UserController {
 			@ApiResponse(responseCode = "500",description = "internal server error",content = {@Content(schema = @Schema(anyOf = RuntimeException.class))})})
 	@PostMapping("/admins/register")
 	public ResponseEntity<ResponseStructure<UserResponse>> saveAdmin(@RequestBody @Valid RegistrationRequest registrationRequest) {
-		UserResponse adminResponse=userService.saveUser(registrationRequest,UserRole.ADMIN);
-		return responseBuilder.success(HttpStatus.CREATED,"Admin created Successfully", adminResponse);
+		UserResponse adminResponse=userService.registerUser(registrationRequest,UserRole.ADMIN);
+		return responseBuilder.success(HttpStatus.ACCEPTED,"Your request is accepted, please verify the mail to register", adminResponse);
 	}
-	
+
+
+
 	@Operation(description = "This end point is used to save the hr to the database",responses = {
 			@ApiResponse(responseCode = "201",description = "hr is created successfully"),
 			@ApiResponse(responseCode = "500",description = "internal server error",content = {@Content(schema = @Schema(anyOf = RuntimeException.class))})})
 	@PostMapping("/hrs/register")
 	public ResponseEntity<ResponseStructure<UserResponse>>saveHr(@RequestBody @Valid RegistrationRequest registrationRequest){
-		UserResponse hrResponse=userService.saveUser(registrationRequest,UserRole.HR);
-		return responseBuilder.success(HttpStatus.CREATED, "Hr created Successfully", hrResponse);
+		UserResponse hrResponse=userService.registerUser(registrationRequest,UserRole.HR);
+		return responseBuilder.success(HttpStatus.ACCEPTED,"Your request is accepted, please verify the mail to register", hrResponse);
 	}
 	
 	@Operation(description = "This end point is used to save the trainer to the database",responses = {
@@ -62,10 +65,18 @@ public class UserController {
 			@ApiResponse(responseCode = "500",description = "internal server error",content = {@Content(schema = @Schema(anyOf = RuntimeException.class))})})
 	@PostMapping("/trainers/register")
 	public ResponseEntity<ResponseStructure<UserResponse>> saveTrainer(@RequestBody @Valid RegistrationRequest registrationRequest){
-		UserResponse response=userService.saveUser(registrationRequest,UserRole.TRAINER);
-		return responseBuilder.success(HttpStatus.CREATED, "Trainer created successfully", response);
+		UserResponse response=userService.registerUser(registrationRequest,UserRole.TRAINER);
+		return responseBuilder.success(HttpStatus.ACCEPTED,"Your request is accepted, please verify the mail to register", response);
 	}
-	
+
+
+	@PostMapping("/users/register/otpVerification")
+	public ResponseEntity<ResponseStructure<UserResponse>> otpVerification
+			(@RequestBody @Valid OtpRequest otpRequest){
+		UserResponse response  = userService.verifyOtp(otpRequest);
+		return responseBuilder.success(HttpStatus.ACCEPTED, "OtpVerfication Success, User was Saved",response);
+
+	}
 	@Operation(description = "This end point is used to add the subjects after registration or update the trainer details to the database",responses = {
 			@ApiResponse(responseCode = "200",description = "updated trainer successfully"),
 			@ApiResponse(responseCode = "404",description = "failed to update the trainer",content = {@Content(schema = @Schema(anyOf = UserNotFoundByIdException.class))})})
@@ -80,8 +91,8 @@ public class UserController {
 			@ApiResponse(responseCode = "500",description = "internal server error",content = {@Content(schema = @Schema(anyOf = RuntimeException.class))})})
 	@PostMapping("/students/register")
 	public ResponseEntity<ResponseStructure<UserResponse>> saveStudent(@RequestBody @Valid RegistrationRequest registrationRequest){
-		UserResponse response=userService.saveUser(registrationRequest,UserRole.STUDENT);
-		return responseBuilder.success(HttpStatus.CREATED, "Student created successfully", response);
+		UserResponse response=userService.registerUser(registrationRequest,UserRole.STUDENT);
+		return responseBuilder.success(HttpStatus.ACCEPTED,"Your request is accepted, please verify the mail to register", response);
 	}
 	
 	@Operation(description = "This end point is used to add the additional details like yop, degree, stream and so on while registering and also can update the details"
@@ -106,10 +117,12 @@ public class UserController {
 	@Operation(description = "This end point is used view the rating of the students by their respective id's",responses = {
 			@ApiResponse(responseCode = "302",description = "rating found successfully"),
 			@ApiResponse(responseCode = "404",description = "student not found by the given id",content = {@Content(schema = @Schema(anyOf = UserNotFoundByIdException.class))})})
+
 	@GetMapping("/students/{studentId}/ratings")
 	public ResponseEntity<ResponseStructure<List<RatingResponse>>> viewRating(@PathVariable String studentId){
 		List<RatingResponse> responses=userService.viewRating(studentId);
 		return responseBuilder.success(HttpStatus.FOUND, "found the ratings of the student", responses);
 	}
+
 
 }
