@@ -5,11 +5,16 @@ import java.util.List;
 import java.util.Random;
 
 
+import com.rest.ets.exception.InvalidOtpException;
+import com.rest.ets.exception.RegistrationSessionExpiredException;
+import com.rest.ets.requestdto.OtpRequest;
 import com.rest.ets.util.CacheHelper;
-import com.rest.ets.util.MailSender;
+import com.rest.ets.util.MailSenderService;
 import com.rest.ets.util.MessageModel;
 import jakarta.mail.MessagingException;
-import org.springframework.cache.annotation.CachePut;
+import jakarta.validation.Valid;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import com.rest.ets.entity.Admin;
@@ -35,6 +40,7 @@ import com.rest.ets.security.RegistrationRequest;
 
 import lombok.AllArgsConstructor;
 
+@Slf4j
 @Service
 @AllArgsConstructor
 public class UserService {
@@ -42,33 +48,50 @@ public class UserService {
 	private UserMapper mapper;
 	private RatingRepository ratingRepository;
 	private RatingMapper ratingMapper;
-	private MailSender mailSender;
+	private MailSenderService mailSender;
+
 	private Random random;
 	private CacheHelper cacheHelper;
 
 	public UserResponse registerUser(RegistrationRequest registrationRequest, UserRole role) {
 		User user = null;
 		switch (role) {
-		case ADMIN -> user = new Admin();
-		case HR -> user = new HR();
-		case STUDENT -> user = new Student();
-		case TRAINER -> user = new Trainer();
-		default -> throw new IllegalArgumentException("Unexpected value: " + role);
+			case ADMIN -> user = new Admin();
+			case HR -> user = new HR();
+			case STUDENT -> user = new Student();
+			case TRAINER -> user = new Trainer();
+			default -> throw new IllegalArgumentException("Unexpected value: " + role);
 		}
-
+		int otp = 0 ;
 		if(user != null) {
 			user = mapper.mapToUserEntity(registrationRequest, user);
 			user.setRole(role);
-			int otp = random.nextInt(100000, 999999);
+			otp = random.nextInt(100000, 999999);
 
 			cacheHelper.userCache(user);
-			cacheHelper.otpCache(otp);
+			cacheHelper.otpCache(otp, user.getEmail());
 		}
-
+		sendVerificationOtpToUsers(user.getEmail(), otp );
 		return mapper.mapToUserResponse(user);
 	}
 
-	public TrainerResponse updateTrainer(TrainerRequest trainerRequest,String userId) {		
+	public UserResponse verifyOtp(OtpRequest otpRequest) {
+
+		Integer otp = cacheHelper.getOtp(otpRequest.getEmail());
+
+		if(!otp.equals(otpRequest.getOtp()))
+			throw new InvalidOtpException("Incorrect OTP");
+
+		User user = cacheHelper.getRegisteringEmail(otpRequest.getEmail());
+		if(!user.getEmail().equals(otpRequest.getEmail()))
+			throw new RegistrationSessionExpiredException(
+					"Registration Session Expired, Please try again");
+
+		userRepository.save(user);
+		return mapper.mapToUserResponse(user);
+	}
+
+	public TrainerResponse updateTrainer(TrainerRequest trainerRequest,String userId) {
 		return userRepository.findById(userId).map((user)->{
 			user=mapper.mapToTrainerEntity(trainerRequest,(Trainer) user);
 			user=userRepository.save(user);
@@ -110,32 +133,33 @@ public class UserService {
 	}
 
 	private  void sendVerificationOtpToUsers(String email, int otp)
-			throws MessagingException {
-       String text ="<!DOCTYPE html>\n" +
-			   "<html lang=\"en\">\n" +
-			   "\n" +
-			   "<head>\n" +
-			   "    <meta charset=\"UTF-8\">\n" +
-			   "    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n" +
-			   "    <title>Document</title>\n" +
-			   "</head>\n" +
-			   "<body>\n" +
-			   "    <p style=\"color: black;background-color: \n" +
-			   "    white; border: 1px solid outset;\">\n" +
-			   "    Hi, EDU Tracking System welcomes you \uD83D\uDE0A,\n" +
-			   "    Please Enter the OTP to verify your Email </p>\n" +
-			   "    <h4>"+ otp +"</h4>\n" +
-			   "\n" +
-			   "</body>\n" +
-			   "\n" +
-			   "</html>";
-	   MessageModel messageModel = new MessageModel();
+	{
+		String text ="<!DOCTYPE html>\n" +
+				"<html lang=\"en\">\n" +
+				"\n" +
+				"<head>\n" +
+				"    <meta charset=\"UTF-8\">\n" +
+				"    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n" +
+				"    <title>Document</title>\n" +
+				"</head>\n" +
+				"<body>\n" +
+				"    <p style=\"color: black;background-color: \n" +
+				"    white; border: 1px solid outset;\">\n" +
+				"    Hi, EDU Tracking System welcomes you \uD83D\uDE0A,\n" +
+				"    Please Enter the OTP to verify your Email </p>\n" +
+				"    <h4>"+ otp +"</h4>\n" +
+				"\n" +
+				"</body>\n" +
+				"\n" +
+				"</html>";
+		MessageModel messageModel = new MessageModel();
 
-	   messageModel.setTo(email);
-	   messageModel.setSendDate(new Date());
-	   messageModel.setText(text);
-	   messageModel.setSubject("Email Verfication");
-	   mailSender.sendemail(messageModel);
+		messageModel.setTo(email);
+		messageModel.setSendDate(new Date());
+		messageModel.setText(text);
+		messageModel.setSubject("Email Verfication");
+		mailSender.sendemail(messageModel);
 
 	}
+
 }
