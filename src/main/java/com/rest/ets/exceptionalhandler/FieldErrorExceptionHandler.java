@@ -3,6 +3,7 @@ package com.rest.ets.exceptionalhandler;
 import java.util.ArrayList;
 import java.util.List;
 
+import lombok.AllArgsConstructor;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
@@ -18,6 +19,7 @@ import com.rest.ets.util.AppResponseBuilder;
 import com.rest.ets.util.CustomFieldError;
 
 @RestControllerAdvice
+
 public class FieldErrorExceptionHandler extends ResponseEntityExceptionHandler{
 
 private AppResponseBuilder responseBuilder;
