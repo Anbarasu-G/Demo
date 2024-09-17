@@ -16,14 +16,13 @@ public class JWT_Service {
     @Value("${my_app.jwt.secret}" )
     private String secret;
     @Value("${my_app.jwt.access_expiry}")
-    private String password;
-    private Long access_expiry;
+    private long access_expiry;
 
     public String createJwt(String userId, String email, String role){
    return Jwts.builder()
            .setClaims(Map.of("userId", userId, "Email", email, "Role", role))
            .setIssuedAt(new Date(System.currentTimeMillis()))
-           .setExpiration(new Date(System.currentTimeMillis()+ access_expiry*60*1000))
+           .setExpiration(new Date(System.currentTimeMillis() + access_expiry * 60 * 1000))
            .signWith(getSigninKey(), SignatureAlgorithm.HS256)
            .compact();
     }

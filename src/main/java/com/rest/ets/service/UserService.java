@@ -167,6 +167,8 @@ public class UserService {
 
 	}
     public String userLogin(LoginRequest loginRequest){
+
+		log.info(loginRequest.getEmail());
 		UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken
 				(loginRequest.getEmail(), loginRequest.getPassword());
 		Authentication authentication = authenticationManager.authenticate(authenticationToken);
