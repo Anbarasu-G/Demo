@@ -1,0 +1,34 @@
+package com.rest.ets.security;
+
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.io.Decoders;
+import io.jsonwebtoken.security.Keys;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
+
+import java.security.Key;
+import java.util.Date;
+import java.util.Map;
+
+@Service
+public class JWT_Service {
+    @Value("${my_app.jwt.secret}" )
+    private String secret;
+    @Value("${my_app.jwt.access_expiry}")
+    private String password;
+    private Long access_expiry;
+
+    public String createJwt(String userId, String email, String role){
+   return Jwts.builder()
+           .setClaims(Map.of("userId", userId, "Email", email, "Role", role))
+           .setIssuedAt(new Date(System.currentTimeMillis()))
+           .setExpiration(new Date(System.currentTimeMillis()+ access_expiry*60*1000))
+           .signWith(getSigninKey(), SignatureAlgorithm.HS256)
+           .compact();
+    }
+
+    private Key getSigninKey(){
+        return Keys.hmacShaKeyFor(Decoders.BASE64.decode(secret));
+    }
+}

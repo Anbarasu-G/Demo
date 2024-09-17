@@ -2,6 +2,7 @@ package com.rest.ets.controller;
 
 import java.util.List;
 
+import com.rest.ets.requestdto.LoginRequest;
 import com.rest.ets.requestdto.OtpRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -124,5 +125,8 @@ public class UserController {
 		return responseBuilder.success(HttpStatus.FOUND, "found the ratings of the student", responses);
 	}
 
-
+    @PostMapping("/login")
+	public String userLogin(@RequestBody LoginRequest loginRequest){
+		return userService.userLogin(loginRequest);
+	}
 }

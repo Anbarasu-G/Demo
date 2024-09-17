@@ -7,14 +7,17 @@ import java.util.Random;
 
 import com.rest.ets.exception.InvalidOtpException;
 import com.rest.ets.exception.RegistrationSessionExpiredException;
+import com.rest.ets.requestdto.LoginRequest;
 import com.rest.ets.requestdto.OtpRequest;
+import com.rest.ets.security.JWT_Service;
 import com.rest.ets.util.CacheHelper;
 import com.rest.ets.util.MailSenderService;
 import com.rest.ets.util.MessageModel;
-import jakarta.mail.MessagingException;
-import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.cache.annotation.Cacheable;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import com.rest.ets.entity.Admin;
@@ -52,6 +55,8 @@ public class UserService {
 
 	private Random random;
 	private CacheHelper cacheHelper;
+	private AuthenticationManager authenticationManager;
+	private JWT_Service jwtService;
 
 	public UserResponse registerUser(RegistrationRequest registrationRequest, UserRole role) {
 		User user = null;
@@ -160,6 +165,20 @@ public class UserService {
 		messageModel.setSubject("Email Verfication");
 		mailSender.sendemail(messageModel);
 
+	}
+    public String userLogin(LoginRequest loginRequest){
+		UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken
+				(loginRequest.getEmail(), loginRequest.getPassword());
+		Authentication authentication = authenticationManager.authenticate(authenticationToken);
+
+		if(authentication.isAuthenticated()){
+			String token = userRepository.findByEmail(loginRequest.getEmail())
+					.map(user -> {
+						return jwtService.createJwt(user.getUserId(), user.getEmail(), user.getRole().name());
+					}).orElseThrow(() -> new UsernameNotFoundException("UserName Not Found "));
+			return  token;
+		}
+		return null;
 	}
 
 }
