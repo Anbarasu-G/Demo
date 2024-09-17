@@ -12,6 +12,7 @@ import lombok.Setter;
 @Component
 @Getter
 @Setter
+
 public class UserRequest {
 	@NotNull(message = "user name should not be null")
 	@Pattern(regexp = "^[a-zA-Z0-9#$&*\\-_.!@]+$\r\n",message = "user name should contain alphabets and numbers and special characters are optional")
