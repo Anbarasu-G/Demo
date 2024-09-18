@@ -22,7 +22,7 @@ public class JWT_Service {
 
     public String createJwt(String userId, String email, String role){
    return Jwts.builder()
-           .setClaims(Map.of("userId", userId, "Email", email, "Role", role))
+           .setClaims(Map.of("userId", userId, "email", email, "role", role))
            .setIssuedAt(new Date(System.currentTimeMillis()))
            .setExpiration(new Date(System.currentTimeMillis() + access_expiry * 60 * 1000))
            .signWith(getSigninKey(), SignatureAlgorithm.HS256)

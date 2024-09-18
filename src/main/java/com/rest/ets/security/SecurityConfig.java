@@ -33,7 +33,7 @@ public class SecurityConfig {
                                         "/hrs/register",
                                         "/trainers/register",
                                         "/students/register",
-                                        "/users/register/otpVerification",
+                                        "/users/register/verify",
                                         "login"
                                 )
                                 .permitAll()

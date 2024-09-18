@@ -71,7 +71,7 @@ public class UserController {
 	}
 
 
-	@PostMapping("/users/register/otpVerification")
+	@PostMapping("/users/register/verify")
 	public ResponseEntity<ResponseStructure<UserResponse>> otpVerification
 			(@RequestBody @Valid OtpRequest otpRequest){
 		UserResponse response  = userService.verifyOtp(otpRequest);
