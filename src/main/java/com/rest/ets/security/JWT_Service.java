@@ -20,13 +20,25 @@ public class JWT_Service {
     @Value("${my_app.jwt.access_expiry}")
     private long access_expiry;
 
-    public String createJwt(String userId, String email, String role){
-   return Jwts.builder()
-           .setClaims(Map.of("userId", userId, "email", email, "role", role))
-           .setIssuedAt(new Date(System.currentTimeMillis()))
-           .setExpiration(new Date(System.currentTimeMillis() + access_expiry * 60 * 1000))
-           .signWith(getSigninKey(), SignatureAlgorithm.HS256)
-           .compact();
+    @Value("${my_app.jwt.refresh_expiry}")
+    private long refresh_expiry;
+
+
+  public String generateAccessToken(String userId, String email, String role){
+        return createJwt(userId, email, role, access_expiry);
+  }
+
+  public  String generateRefreshToken(String userId, String email, String role){
+      return createJwt(userId, email, role, refresh_expiry);
+  }
+
+    private String createJwt(String userId, String email, String role, long access_expiry){
+        return Jwts.builder()
+                .setClaims(Map.of("userId", userId, "email", email, "role", role))
+                .setIssuedAt(new Date(System.currentTimeMillis()))
+                .setExpiration(new Date(System.currentTimeMillis() + access_expiry * 60 * 1000))
+                .signWith(getSigninKey(), SignatureAlgorithm.HS256)
+                .compact();
     }
 
     private Key getSigninKey(){
@@ -40,6 +52,6 @@ public class JWT_Service {
                 .build();
 
         return  jwtParser.parseClaimsJws(token)
-              .getBody();
+                .getBody();
     }
 }

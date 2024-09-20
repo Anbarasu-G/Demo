@@ -3,6 +3,7 @@ package com.rest.ets.security;
 import com.rest.ets.exception.UserNotFoundByIdException;
 import com.rest.ets.repository.UserRepository;
 import lombok.AllArgsConstructor;
+import org.springframework.http.ResponseCookie;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -19,9 +20,9 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-    // Optional<User> user = ;
+
         return userRepository.findByEmail(username)
                 .map(CustomUserDetails::new)
         .orElseThrow(() -> new UsernameNotFoundException("User Not Found by This Email"));
-    };
+    }
 }

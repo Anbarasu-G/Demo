@@ -126,7 +126,13 @@ public class UserController {
 	}
 
     @PostMapping("/login")
-	public String userLogin(@RequestBody LoginRequest loginRequest){
+	public ResponseEntity<ResponseStructure<UserResponse>> userLogin(@RequestBody LoginRequest loginRequest){
 		return userService.userLogin(loginRequest);
 	}
+
+	@PostMapping("/refresh_login")
+	public ResponseEntity<ResponseStructure<UserResponse>> accessToken(){
+		return userService.refreshLogin();
+	}
+
 }
