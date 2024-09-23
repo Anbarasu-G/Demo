@@ -30,7 +30,7 @@ public class SecurityConfig {
         return httpSecurity
                 .csrf(AbstractHttpConfigurer::disable)
                 .securityMatchers(matchers -> matchers.requestMatchers("/"))
-                .authorizeHttpRequests((authorize) ->
+                .authorizeHttpRequests(authorize ->
                         authorize.requestMatchers(
                                         "/admins/register",
                                         "/hrs/register",
