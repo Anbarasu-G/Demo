@@ -1,16 +1,11 @@
 package com.rest.ets.security;
 
-import com.rest.ets.exception.UserNotFoundByIdException;
 import com.rest.ets.repository.UserRepository;
 import lombok.AllArgsConstructor;
-import org.springframework.http.ResponseCookie;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
-
-import java.util.Optional;
 
 @Service
 @AllArgsConstructor

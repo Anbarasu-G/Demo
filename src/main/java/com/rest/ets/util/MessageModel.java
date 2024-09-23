@@ -1,9 +1,7 @@
 package com.rest.ets.util;
 
-import jakarta.mail.internet.MimeMessage;
 import lombok.Getter;
 import lombok.Setter;
-import org.springframework.mail.javamail.JavaMailSender;
 
 
 import java.util.Date;
