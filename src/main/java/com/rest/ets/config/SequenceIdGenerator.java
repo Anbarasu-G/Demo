@@ -11,8 +11,7 @@ public class SequenceIdGenerator implements IdentifierGenerator {
 	@Override
 	public Object generate(SharedSessionContractImplementor session, Object object) {
 		String uuid = UUID.randomUUID().toString();
-		String id = "EDU" + Year.now().toString() + uuid;
-		return id;
+		return "EDU" + Year.now().toString() + uuid;
 	}
 
 }

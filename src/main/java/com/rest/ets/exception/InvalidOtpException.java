@@ -7,7 +7,7 @@ public class InvalidOtpException extends RuntimeException{
     private String message;
 
     @Override
-    public String getMessage() {
+    public final String getMessage() {
         return message;
     }
 }
