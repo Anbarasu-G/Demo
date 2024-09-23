@@ -42,7 +42,6 @@ public class RefreshFilter extends OncePerRequestFilter {
                     if (role != null && email != null) {
 
 
-                        UserRole userRole = UserRole.valueOf(role);
                         UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(email, null,
                                 UserRole.valueOf(role)
                                         .getPrivileges()
