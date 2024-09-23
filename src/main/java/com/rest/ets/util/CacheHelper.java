@@ -1,10 +1,6 @@
 package com.rest.ets.util;
 
 import com.rest.ets.entity.User;
-import com.rest.ets.exception.InvalidOtpException;
-import com.rest.ets.exception.RegistrationSessionExpiredException;
-import org.hibernate.cache.internal.QueryResultsCacheImpl;
-import org.springframework.cache.Cache;
 import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Component;

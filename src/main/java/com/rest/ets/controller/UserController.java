@@ -2,6 +2,7 @@ package com.rest.ets.controller;
 
 import java.util.List;
 
+import com.rest.ets.requestdto.LoginRequest;
 import com.rest.ets.requestdto.OtpRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -70,7 +71,7 @@ public class UserController {
 	}
 
 
-	@PostMapping("/users/register/otpVerification")
+	@PostMapping("/users/register/verify")
 	public ResponseEntity<ResponseStructure<UserResponse>> otpVerification
 			(@RequestBody @Valid OtpRequest otpRequest){
 		UserResponse response  = userService.verifyOtp(otpRequest);
@@ -124,5 +125,14 @@ public class UserController {
 		return responseBuilder.success(HttpStatus.FOUND, "found the ratings of the student", responses);
 	}
 
+    @PostMapping("/login")
+	public ResponseEntity<ResponseStructure<UserResponse>> userLogin(@RequestBody LoginRequest loginRequest){
+		return userService.userLogin(loginRequest);
+	}
+
+	@PostMapping("/refresh_login")
+	public ResponseEntity<ResponseStructure<UserResponse>> accessToken(){
+		return userService.refreshLogin();
+	}
 
 }

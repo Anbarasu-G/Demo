@@ -7,14 +7,24 @@ import java.util.Random;
 
 import com.rest.ets.exception.InvalidOtpException;
 import com.rest.ets.exception.RegistrationSessionExpiredException;
+import com.rest.ets.requestdto.LoginRequest;
 import com.rest.ets.requestdto.OtpRequest;
+import com.rest.ets.security.JWTService;
 import com.rest.ets.util.CacheHelper;
 import com.rest.ets.util.MailSenderService;
 import com.rest.ets.util.MessageModel;
-import jakarta.mail.MessagingException;
-import jakarta.validation.Valid;
+import com.rest.ets.util.ResponseStructure;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.cache.annotation.Cacheable;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseCookie;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import com.rest.ets.entity.Admin;
@@ -38,11 +48,8 @@ import com.rest.ets.responsedto.TrainerResponse;
 import com.rest.ets.responsedto.UserResponse;
 import com.rest.ets.security.RegistrationRequest;
 
-import lombok.AllArgsConstructor;
-
 @Slf4j
 @Service
-@AllArgsConstructor
 public class UserService {
 	private UserRepository userRepository;
 	private UserMapper mapper;
@@ -52,6 +59,25 @@ public class UserService {
 
 	private Random random;
 	private CacheHelper cacheHelper;
+	private AuthenticationManager authenticationManager;
+	private JWTService jwtService;
+
+	@Value("${my_app.jwt.access_expiry}")
+	private long accessExpiry;
+	@Value("${my_app.jwt.refresh_expiry}")
+	private long refreshExpiry;
+
+	public UserService(UserRepository userRepository, UserMapper mapper, RatingRepository ratingRepository, RatingMapper ratingMapper, MailSenderService mailSender, Random random, CacheHelper cacheHelper, AuthenticationManager authenticationManager, JWTService jwtService) {
+		this.userRepository = userRepository;
+		this.mapper = mapper;
+		this.ratingRepository = ratingRepository;
+		this.ratingMapper = ratingMapper;
+		this.mailSender = mailSender;
+		this.random = random;
+		this.cacheHelper = cacheHelper;
+		this.authenticationManager = authenticationManager;
+		this.jwtService = jwtService;
+	}
 
 	public UserResponse registerUser(RegistrationRequest registrationRequest, UserRole role) {
 		User user = null;
@@ -161,5 +187,61 @@ public class UserService {
 		mailSender.sendemail(messageModel);
 
 	}
+    public ResponseEntity<ResponseStructure<UserResponse>> userLogin(LoginRequest loginRequest){
 
+		log.info(loginRequest.getEmail());
+		UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken
+				(loginRequest.getEmail(), loginRequest.getPassword());
+		Authentication authentication = authenticationManager.authenticate(authenticationToken);
+
+		if(authentication.isAuthenticated()){
+			return userRepository.findByEmail(loginRequest.getEmail())
+					.map(user -> {
+						HttpHeaders httpHeaders = new HttpHeaders();
+						httpHeaders = grantAccessToken(user, httpHeaders);
+						httpHeaders = grantRefreshToken(user, httpHeaders);
+return ResponseEntity.ok().headers(httpHeaders).body(ResponseStructure.create(HttpStatus.OK.value(),  "Login SuccessFull", mapper.mapToUserResponse(user)));
+					}).orElseThrow(() -> new UsernameNotFoundException("UserName Not Found "));
+		}else {
+throw new UsernameNotFoundException("User Not Found");
+		}
+    }
+
+
+private HttpHeaders grantAccessToken(User user, HttpHeaders httpHeaders){
+	String accessToken = jwtService.generateAccessToken(user.getUserId(), user.getEmail(), user.getRole().name());
+	httpHeaders.add(HttpHeaders.SET_COOKIE, generateCookie("at", accessToken, accessExpiry*60));
+	return  httpHeaders;
+
+}
+
+	private HttpHeaders grantRefreshToken(User user, HttpHeaders httpHeaders){
+		String refreshToken = jwtService.generateAccessToken(user.getUserId(), user.getEmail(), user.getRole().name());
+		httpHeaders.add(HttpHeaders.SET_COOKIE, generateCookie("rt", refreshToken, refreshExpiry*60));
+		return  httpHeaders;
+
+	}
+	private String generateCookie(String name, String value, long maxAge){
+		return ResponseCookie.from(name,value)
+				.domain("localhost")
+				.path("/")
+				.secure(false)
+				.httpOnly(true)
+				.sameSite("Lax")
+				.maxAge(maxAge)
+				.build()
+				.toString();
+
+	}
+
+	public ResponseEntity<ResponseStructure<UserResponse>> refreshLogin() {
+		String email = SecurityContextHolder.getContext().getAuthentication().getName();
+		return userRepository.findByEmail(email).map(user-> {
+			HttpHeaders httpHeaders = new HttpHeaders();
+			httpHeaders = grantAccessToken(user, httpHeaders);
+			return ResponseEntity.ok().headers(httpHeaders).body(ResponseStructure.create(HttpStatus.OK.value(), "Refresh Login SuccessFully", mapper.mapToUserResponse(user)));
+
+		}).orElseThrow(()-> new UsernameNotFoundException("Username Not Found"));
+
+	}
 }
