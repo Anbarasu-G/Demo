@@ -37,10 +37,11 @@ public User mapToUserEntity(RegistrationRequest registrationRequest, User user) 
 	}
 	public Trainer mapToTrainerEntity(TrainerRequest trainerRequest,Trainer trainer) {
 		if(trainerRequest.getUsername()!=null)
-		trainer.setUsername(trainerRequest.getUsername());
-		if(trainerRequest.getEmail()!=null)
-		trainer.setEmail(trainerRequest.getEmail());
-		trainer.setSubjects(trainerRequest.getSubjects());
+			trainer.setUsername(trainerRequest.getUsername());
+		if(trainerRequest.getEmail()!=null) {
+			trainer.setEmail(trainerRequest.getEmail());
+			trainer.setSubjects(trainerRequest.getSubjects());
+		}
 		return trainer;
 	}
 	public TrainerResponse mapToTrainerResponse(Trainer trainer) {
@@ -53,15 +54,16 @@ public User mapToUserEntity(RegistrationRequest registrationRequest, User user) 
 	}
 	public Student mapToStudentEntity(StudentRequest studentRequest, Student student) {
 		if(studentRequest!=null)
-		student.setUsername(studentRequest.getUsername());
-		if(studentRequest!=null)
-		student.setEmail(studentRequest.getEmail());
-		student.setDegree(studentRequest.getDegree());
-		student.setStream(studentRequest.getStream());
-		student.setYearOfPassout(studentRequest.getYearOfPassout());
-		student.setDegreePercentage(studentRequest.getDegreePercentage());
-		student.setTwelthPercentage(studentRequest.getTwelthPercentage());
-		student.setTenthPercentage(studentRequest.getTenthPercentage());
+		   student.setUsername(studentRequest.getUsername());
+		if(studentRequest!=null) {
+			student.setEmail(studentRequest.getEmail());
+			student.setDegree(studentRequest.getDegree());
+			student.setStream(studentRequest.getStream());
+			student.setYearOfPassout(studentRequest.getYearOfPassout());
+			student.setDegreePercentage(studentRequest.getDegreePercentage());
+			student.setTwelthPercentage(studentRequest.getTwelthPercentage());
+			student.setTenthPercentage(studentRequest.getTenthPercentage());
+		}
 		return student;
 	}
 	public StudentResponse mapToStudentResponse(Student student) {

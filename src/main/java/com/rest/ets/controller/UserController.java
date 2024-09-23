@@ -40,6 +40,7 @@ import lombok.AllArgsConstructor;
 public class UserController {
 	private UserService userService;
 	private AppResponseBuilder responseBuilder;
+	private final String status =  "Your request is accepted, please verify the mail to register";
 	
 	@Operation(description = "This end point is used to save the admin to the database",responses = {
 			@ApiResponse(responseCode = "201",description = "admin is created successfully"),
@@ -47,7 +48,7 @@ public class UserController {
 	@PostMapping("/admins/register")
 	public ResponseEntity<ResponseStructure<UserResponse>> saveAdmin(@RequestBody @Valid RegistrationRequest registrationRequest) {
 		UserResponse adminResponse=userService.registerUser(registrationRequest,UserRole.ADMIN);
-		return responseBuilder.success(HttpStatus.ACCEPTED,"Your request is accepted, please verify the mail to register", adminResponse);
+		return responseBuilder.success(HttpStatus.ACCEPTED, status, adminResponse);
 	}
 
 
@@ -58,7 +59,7 @@ public class UserController {
 	@PostMapping("/hrs/register")
 	public ResponseEntity<ResponseStructure<UserResponse>>saveHr(@RequestBody @Valid RegistrationRequest registrationRequest){
 		UserResponse hrResponse=userService.registerUser(registrationRequest,UserRole.HR);
-		return responseBuilder.success(HttpStatus.ACCEPTED,"Your request is accepted, please verify the mail to register", hrResponse);
+		return responseBuilder.success(HttpStatus.ACCEPTED,status, hrResponse);
 	}
 	
 	@Operation(description = "This end point is used to save the trainer to the database",responses = {
@@ -67,7 +68,7 @@ public class UserController {
 	@PostMapping("/trainers/register")
 	public ResponseEntity<ResponseStructure<UserResponse>> saveTrainer(@RequestBody @Valid RegistrationRequest registrationRequest){
 		UserResponse response=userService.registerUser(registrationRequest,UserRole.TRAINER);
-		return responseBuilder.success(HttpStatus.ACCEPTED,"Your request is accepted, please verify the mail to register", response);
+		return responseBuilder.success(HttpStatus.ACCEPTED,status, response);
 	}
 
 
@@ -93,7 +94,7 @@ public class UserController {
 	@PostMapping("/students/register")
 	public ResponseEntity<ResponseStructure<UserResponse>> saveStudent(@RequestBody @Valid RegistrationRequest registrationRequest){
 		UserResponse response=userService.registerUser(registrationRequest,UserRole.STUDENT);
-		return responseBuilder.success(HttpStatus.ACCEPTED,"Your request is accepted, please verify the mail to register", response);
+		return responseBuilder.success(HttpStatus.ACCEPTED,status, response);
 	}
 	
 	@Operation(description = "This end point is used to add the additional details like yop, degree, stream and so on while registering and also can update the details"

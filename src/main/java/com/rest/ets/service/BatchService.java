@@ -21,7 +21,7 @@ public class BatchService {
 	
 	public BatchResponse saveBatch(BatchRequest request) {
 		Batch batch = mapper.mapToBatchEntity(request, new Batch());
-		batch.setBatchStatus(BatchStatus.CREATED);;
+		batch.setBatchStatus(BatchStatus.CREATED);
 		batch=batchRepository.save(batch);
 		return mapper.mapToBatchResponse(batch);
 	}
@@ -51,9 +51,4 @@ public class BatchService {
 			
 		}).orElseThrow(()->new BatchNotFoundByIdException("failed to change the batch status"));
 	}
-	
-	
-	
-	
-
 }
