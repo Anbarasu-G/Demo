@@ -9,7 +9,7 @@ import com.rest.ets.exception.InvalidOtpException;
 import com.rest.ets.exception.RegistrationSessionExpiredException;
 import com.rest.ets.requestdto.LoginRequest;
 import com.rest.ets.requestdto.OtpRequest;
-import com.rest.ets.security.JWT_Service;
+import com.rest.ets.security.JWTService;
 import com.rest.ets.util.CacheHelper;
 import com.rest.ets.util.MailSenderService;
 import com.rest.ets.util.MessageModel;
@@ -60,14 +60,14 @@ public class UserService {
 	private Random random;
 	private CacheHelper cacheHelper;
 	private AuthenticationManager authenticationManager;
-	private JWT_Service jwtService;
+	private JWTService jwtService;
 
 	@Value("${my_app.jwt.access_expiry}")
-	private long access_expiry;
+	private long accessExpiry;
 	@Value("${my_app.jwt.refresh_expiry}")
-	private long refresh_expiry;
+	private long refreshExpiry;
 
-	public UserService(UserRepository userRepository, UserMapper mapper, RatingRepository ratingRepository, RatingMapper ratingMapper, MailSenderService mailSender, Random random, CacheHelper cacheHelper, AuthenticationManager authenticationManager, JWT_Service jwtService) {
+	public UserService(UserRepository userRepository, UserMapper mapper, RatingRepository ratingRepository, RatingMapper ratingMapper, MailSenderService mailSender, Random random, CacheHelper cacheHelper, AuthenticationManager authenticationManager, JWTService jwtService) {
 		this.userRepository = userRepository;
 		this.mapper = mapper;
 		this.ratingRepository = ratingRepository;
@@ -210,14 +210,14 @@ throw new UsernameNotFoundException("User Not Found");
 
 private HttpHeaders grantAccessToken(User user, HttpHeaders httpHeaders){
 	String accessToken = jwtService.generateAccessToken(user.getUserId(), user.getEmail(), user.getRole().name());
-	httpHeaders.add(HttpHeaders.SET_COOKIE, generateCookie("at", accessToken, access_expiry*60));
+	httpHeaders.add(HttpHeaders.SET_COOKIE, generateCookie("at", accessToken, accessExpiry*60));
 	return  httpHeaders;
 
 }
 
 	private HttpHeaders grantRefreshToken(User user, HttpHeaders httpHeaders){
 		String refreshToken = jwtService.generateAccessToken(user.getUserId(), user.getEmail(), user.getRole().name());
-		httpHeaders.add(HttpHeaders.SET_COOKIE, generateCookie("rt", refreshToken, refresh_expiry*60));
+		httpHeaders.add(HttpHeaders.SET_COOKIE, generateCookie("rt", refreshToken, refreshExpiry*60));
 		return  httpHeaders;
 
 	}

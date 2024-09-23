@@ -20,7 +20,7 @@ import java.util.Optional;
 
 @AllArgsConstructor
 public class JwtFilter extends OncePerRequestFilter {
-    private JWT_Service jwtService;
+    private JWTService jwtService;
 
     @Override
     protected void doFilterInternal

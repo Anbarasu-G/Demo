@@ -14,29 +14,29 @@ import java.util.Date;
 import java.util.Map;
 
 @Service
-public class JWT_Service {
+public class JWTService {
     @Value("${my_app.jwt.secret}" )
     private String secret;
     @Value("${my_app.jwt.access_expiry}")
-    private long access_expiry;
+    private long accessExpiry;
 
     @Value("${my_app.jwt.refresh_expiry}")
-    private long refresh_expiry;
+    private long refreshExpiry;
 
 
   public String generateAccessToken(String userId, String email, String role){
-        return createJwt(userId, email, role, access_expiry);
+        return createJwt(userId, email, role, accessExpiry);
   }
 
   public  String generateRefreshToken(String userId, String email, String role){
-      return createJwt(userId, email, role, refresh_expiry);
+      return createJwt(userId, email, role, refreshExpiry);
   }
 
-    private String createJwt(String userId, String email, String role, long access_expiry){
+    private String createJwt(String userId, String email, String role, long accessExpiry){
         return Jwts.builder()
                 .setClaims(Map.of("userId", userId, "email", email, "role", role))
                 .setIssuedAt(new Date(System.currentTimeMillis()))
-                .setExpiration(new Date(System.currentTimeMillis() + access_expiry * 60 * 1000))
+                .setExpiration(new Date(System.currentTimeMillis() + accessExpiry * 60 * 1000))
                 .signWith(getSigninKey(), SignatureAlgorithm.HS256)
                 .compact();
     }
