@@ -48,9 +48,7 @@ public class JwtFilter extends OncePerRequestFilter {
                                 UserRole.valueOf(role)
                                         .getPrivileges()
                                         .stream()
-                                        .map((privilege) -> {
-                                            return new SimpleGrantedAuthority(privilege.name());
-                                        })
+                                        .map((privilege) -> new SimpleGrantedAuthority(privilege.name()))
                                         .toList()
                         );
 
