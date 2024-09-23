@@ -27,7 +27,7 @@ public class RefreshFilter extends OncePerRequestFilter {
         Cookie[] cookies = request.getCookies();
 
         if (cookies != null) {
-            System.out.println("cookies are present" + cookies.length);
+
             Optional<Cookie> refreshTokenCookie = Arrays.stream(cookies)
                     .filter(cookie -> "rt".equals(cookie.getName()))
                     .findFirst();
@@ -47,9 +47,7 @@ public class RefreshFilter extends OncePerRequestFilter {
                                 UserRole.valueOf(role)
                                         .getPrivileges()
                                         .stream()
-                                        .map((privilege) -> {
-                                            return new SimpleGrantedAuthority(privilege.name());
-                                        })
+                                        .map(privilege -> new SimpleGrantedAuthority(privilege.name()))
                                         .toList()
                         );
 

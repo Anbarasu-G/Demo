@@ -29,7 +29,7 @@ public class JwtFilter extends OncePerRequestFilter {
         Cookie[] cookies = request.getCookies();
 
         if (cookies != null) {
-            System.out.println("cookies are present" + cookies.length);
+
             Optional<Cookie> accessTokenCookie = Arrays.stream(cookies)
                     .filter(cookie -> "at".equals(cookie.getName()))
                     .findFirst();
@@ -44,7 +44,6 @@ public class JwtFilter extends OncePerRequestFilter {
                     if (role != null && email != null) {
 
 
-                        UserRole userRole = UserRole.valueOf(role);
                         UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(email, null,
                                 UserRole.valueOf(role)
                                         .getPrivileges()
