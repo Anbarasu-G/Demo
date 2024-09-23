@@ -40,7 +40,7 @@ import lombok.AllArgsConstructor;
 public class UserController {
 	private UserService userService;
 	private AppResponseBuilder responseBuilder;
-	private final String status =  "Your request is accepted, please verify the mail to register";
+	private static final String status =  "Your request is accepted, please verify the mail to register";
 	
 	@Operation(description = "This end point is used to save the admin to the database",responses = {
 			@ApiResponse(responseCode = "201",description = "admin is created successfully"),
